@@ -392,7 +392,13 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     UIImageView *resizableImageView = [[UIImageView alloc] initWithImage:imageFromView];
     resizableImageView.frame = _senderViewOriginalFrame;
     resizableImageView.clipsToBounds = YES;
-    resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
+
+	if (imageFromView.size.height >= imageFromView.size.width) {
+		resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
+	} else if (imageFromView.size.height < imageFromView.size.width) {
+		resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
+	}
+
     resizableImageView.backgroundColor = [UIColor colorWithWhite:(_useWhiteBackgroundColor) ? 1 : 0 alpha:1];
     [_applicationWindow addSubview:resizableImageView];
     _senderViewForAnimation.hidden = YES;
@@ -446,9 +452,15 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     
     UIImageView *resizableImageView = [[UIImageView alloc] initWithImage:imageFromView];
     resizableImageView.frame = (imageFromView) ? CGRectMake(0, (screenHeight/2)-((imageFromView.size.height / scaleFactor)/2)+scrollView.frame.origin.y, screenWidth, imageFromView.size.height / scaleFactor) : CGRectZero;
-    resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
+
+	if (imageFromView.size.height >= imageFromView.size.width) {
+		    resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
+	} else if (imageFromView.size.height < imageFromView.size.width) {
+		    resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
+	}
+
     resizableImageView.backgroundColor = [UIColor clearColor];
-    resizableImageView.clipsToBounds = NO;
+    resizableImageView.clipsToBounds = YES;
     [_applicationWindow addSubview:resizableImageView];
     self.view.hidden = YES;
     
@@ -458,17 +470,18 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
         _scaleImage = nil;
         
         [fadeView removeFromSuperview];
-        [resizableImageView removeFromSuperview];
-        
+		[resizableImageView removeFromSuperview];
+
         [self prepareForClosePhotoBrowser];
         [self dismissPhotoBrowserAnimated:NO];
     };
-
+    
     [UIView animateWithDuration:_animationDuration animations:^{
         fadeView.alpha = 0;
+//		resizableImageView.alpha = 0;
         self.view.backgroundColor = [UIColor clearColor];
     } completion:nil];
-    
+
     if(_usePopAnimation)
     {
         [self animateView:resizableImageView
@@ -640,8 +653,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     _actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                   target:self
                                                                   action:@selector(actionButtonPressed:)];
-    [_actionButton setTintColor:[UIColor whiteColor]];
-    
+	[_actionButton setTintColor:[UIColor whiteColor]];
     // Gesture
     _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
     [_panGesture setMinimumNumberOfTouches:1];
